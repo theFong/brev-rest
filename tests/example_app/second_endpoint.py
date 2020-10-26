@@ -6,10 +6,10 @@ route = Router("/second_endpoint")
 
 
 @route
-def get(id: str):
-    ...
+def get():
+    return shared2.do_thing()
 
 
 @route
 def delete():
-    ...
+    return

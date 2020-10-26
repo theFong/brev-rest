@@ -71,6 +71,12 @@ def test_brev_other_endpoint(brev_client: TestClient):
     assert resp.status_code == 200
 
 
+def test_brev_use_other_mod(brev_client: TestClient):
+    resp = brev_client.get("/second_endpoint")
+
+    assert resp.json() == "did thing"
+
+
 def test_brev_sub_package(brev_client: TestClient):
     resp = brev_client.get("/subpackage")
 
