@@ -3,8 +3,8 @@
 - [x] route details
 - [x] sub routes
 - [x] ApiRouter
-- [] Brev router accepts fastapi parameters
-- [] implement type hints/auto complete for decorator
+- [ ] Brev router accepts fastapi parameters
+- [ ] implement type hints/auto complete for decorator
 
 ## Example
 
