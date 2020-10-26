@@ -37,39 +37,21 @@ class Router:
         *args,
         **kwargs
     ):
-        print("new route made")
-        print(args, kwargs)
+        def decorator(_endpoint):
+            @functools.wraps(_endpoint)
+            def inner(*args, **kwargs):
+                return endpoint(*args, **kwargs)
+
+            route = Route(path=path, endpoint=_endpoint, args=args, kwargs=kwargs)
+            self.routes.append(route)
+            return inner
+
         if callable(endpoint):
-            print("was callable")
-            return self.decorator(endpoint, path=path, args=args, kwargs=kwargs)
+            return decorator(endpoint)
         elif endpoint is None:
-            print("passing decorator", endpoint)
-            return self.decorator
+            return decorator
         else:
-            raise Exception("invalid argument", endpoint)
-
-    def decorator(
-        self,
-        endpoint: typing.Callable,
-        path: str = default_sub_path,
-        args=None,
-        kwargs=None,
-    ):
-        if args == None:
-            args = ()
-        if kwargs == None:
-            kwargs = {}
-
-        @functools.wraps(endpoint)
-        def inner(*args, **kwargs):
-            return endpoint(*args, **kwargs)
-
-        print("in dec")
-        print(args, kwargs)
-        self.routes.append(
-            Route(path=path, endpoint=endpoint, args=args, kwargs=kwargs)
-        )
-        return inner
+            raise Exception("Invalid argument", endpoint)
 
     @classmethod
     def get_name_from_file(cls):
