@@ -3,11 +3,7 @@ import abc
 
 class App(abc.ABC):
     @abc.abstractmethod
-    def add_route(self, route):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def add_route_group(self, group):
+    def add_router(self, route):
         raise NotImplementedError()
 
     @abc.abstractmethod

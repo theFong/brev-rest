@@ -16,21 +16,31 @@ class Asgi(rest.App):
 
 
 class BrevFastApi(Asgi):
-    def __init__(self, routes: typing.List[brev_route.Route]):
+    def __init__(self, routers: typing.List[brev_route.Router]):
         self.app = fastapi.FastAPI()
 
-        for r in routes:
-            self.add_route(r)
+        for r in routers:
+            print("adding router", r.name, r)
+            self.add_router(r)
 
-    def add_route(self, route: brev_route.Route):
-        for fn in route.fns:
-            self.app.add_api_route(route.route_base, fn, methods=[fn.__name__])
-
-    def add_route_group(self, group):
-        raise NotImplementedError()
+    def add_router(self, router: brev_route.Router):
+        fastapi_api_router = fastapi.APIRouter()
+        for r in router.routes:
+            print("adding route", router.name, r)
+            fastapi_api_router.add_api_route(
+                r.path, r.endpoint, methods=[r.endpoint.__name__], *r.args, **r.kwargs
+            )
+        self.app.include_router(
+            fastapi_api_router, prefix=router.path, tags=[router.name]
+        )
 
     def get_server(self) -> ASGIApp:
         return self.app
 
     def run(self):
         uvicorn.run(self.app)
+
+
+class FastApiRouter(brev_route.Router):
+    def __call__(self, fn=None):
+        return super().__call__(fn=fn)

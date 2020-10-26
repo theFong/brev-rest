@@ -13,7 +13,7 @@ def _get_endpoint_files(path=".") -> typing.Iterable[str]:
     """
     Returns relative paths with use of Route object
     """
-    res = astpath.search(path, "//Call/func/*[@id='Route' or @attr='Route']")
+    res = astpath.search(path, "//Call/func/*[@id='Router' or @attr='Router']")
 
     return set(s[0] for s in res)
 
@@ -30,7 +30,7 @@ def _load_endpoint_files(app_path, endpoint_files):
         _load_module_from_file_path(ef)
 
 
-def make_routes(*, app_path: str) -> typing.List[route.Route]:
+def make_routes(*, app_path: str) -> typing.List[route.Router]:
     resolved_path = pathlib.Path(app_path).resolve()
 
     endpoint_files = _get_endpoint_files(path=resolved_path)

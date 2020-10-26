@@ -1,34 +1,78 @@
 import typing
 import functools
+import inspect
+import pathlib
+from dataclasses import dataclass
 
-all_routes: typing.List["Route"] = []  # temp singleton
+all_routes: typing.List["Router"] = []  # temp singleton
+
+default_sub_path = ""
 
 
+@dataclass
 class Route:
-    def __init__(self, route_base: str, name: typing.Optional[str] = None):
-        self.route_base = route_base
+    endpoint: typing.Callable
+    args: typing.Tuple[typing.Any]
+    kwargs: typing.Any
+    path: str = default_sub_path
+
+
+class Router:
+    def __init__(self, path: str, name: typing.Optional[str] = None):
+        print("new router made")
+        self.path = path
 
         if name is None:
             self.name = self.get_name_from_file()
         else:
             self.name = name
-        self.fns: typing.List[typing.Callable] = []
+
+        self.routes: typing.List[Route] = []
         all_routes.append(self)
 
-    def __call__(self, fn: typing.Union[typing.Callable]):
-        if callable(fn):
-            return self.decorator(fn)
+    def __call__(
+        self,
+        endpoint: typing.Callable = None,
+        path: str = default_sub_path,
+        *args,
+        **kwargs
+    ):
+        print("new route made")
+        print(args, kwargs)
+        if callable(endpoint):
+            print("was callable")
+            return self.decorator(endpoint, path=path, args=args, kwargs=kwargs)
+        elif endpoint is None:
+            print("passing decorator", endpoint)
+            return self.decorator
         else:
-            raise Exception("invalid decorator parameter")
+            raise Exception("invalid argument", endpoint)
 
-    def decorator(self, fn: typing.Callable):
-        @functools.wraps(fn)
+    def decorator(
+        self,
+        endpoint: typing.Callable,
+        path: str = default_sub_path,
+        args=None,
+        kwargs=None,
+    ):
+        if args == None:
+            args = ()
+        if kwargs == None:
+            kwargs = {}
+
+        @functools.wraps(endpoint)
         def inner(*args, **kwargs):
-            return fn(*args, **kwargs)
+            return endpoint(*args, **kwargs)
 
-        self.fns.append(fn)
+        print("in dec")
+        print(args, kwargs)
+        self.routes.append(
+            Route(path=path, endpoint=endpoint, args=args, kwargs=kwargs)
+        )
         return inner
 
     @classmethod
     def get_name_from_file(cls):
-        return __file__.split(".")[0]
+        frame = inspect.stack()[2]
+        name = pathlib.Path(frame.filename).stem
+        return name

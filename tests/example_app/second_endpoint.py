@@ -1,7 +1,8 @@
-from brev_rest.route import Route
+print("second_endpoint loading")
+from brev_rest.route import Router
 
 
-route = Route("/second_endpoint")
+route = Router("/second_endpoint")
 
 
 @route

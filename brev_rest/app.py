@@ -1,9 +1,10 @@
 from . import rest
 from . import asgi
 from . import route_loader
+from . import route
 
 
-def run(*, app_path: str, port=8000) -> None:
+def run(*, app_path: str) -> None:
     routes = route_loader.make_routes(app_path=app_path)
     app = asgi.BrevFastApi(routes)
 
@@ -16,6 +17,7 @@ def _run(rest_app: rest.App) -> None:
 
 def get_server(*, app_path: str):
     routes = route_loader.make_routes(app_path=app_path)
+    print(len(routes))
     app = asgi.BrevFastApi(routes)
 
     return _get_server(app)
@@ -23,3 +25,7 @@ def get_server(*, app_path: str):
 
 def _get_server(rest_app: rest.App):
     return rest_app.get_server()
+
+
+def reset():
+    route.all_routes = []
