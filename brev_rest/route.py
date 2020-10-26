@@ -20,7 +20,6 @@ class Router:
     all_routes: typing.List["Router"] = []  # temp singleton
 
     def __init__(self, path: str, name: typing.Optional[str] = None):
-        print("initing")
         self.path = path
 
         if name is None:
@@ -38,8 +37,6 @@ class Router:
         *args,
         **kwargs
     ):
-        print("called")
-
         def decorator(_endpoint):
             @functools.wraps(_endpoint)
             def inner(*args, **kwargs):

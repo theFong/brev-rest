@@ -1,4 +1,3 @@
-print("loading ep")
 from brev_rest.route import Router
 from example_app import shared1  # type: ignore
 
