@@ -1,29 +1,31 @@
+print("loading ep")
 from brev_rest.route import Router
+from example_app import shared1  # type: ignore
 
 
-route = Router("/endpoint")
+router = Router("/endpoint")
 
 
-@route
+@router
 def get():
     return "original"
 
 
-@route(path="/{ep_id}")
+@router(path="/{ep_id}")
 def get(ep_id: str):
     return ep_id
 
 
-@route()
+@router()
 def put():
     return
 
 
-@route(status_code=201)
+@router(status_code=201)
 def post():
     return
 
 
-@route(path="/subpath")
+@router(path="/subpath")
 def delete():
     return

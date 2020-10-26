@@ -4,7 +4,6 @@ import inspect
 import pathlib
 from dataclasses import dataclass
 
-all_routes: typing.List["Router"] = []  # temp singleton
 
 default_sub_path = ""
 
@@ -18,7 +17,10 @@ class Route:
 
 
 class Router:
+    all_routes: typing.List["Router"] = []  # temp singleton
+
     def __init__(self, path: str, name: typing.Optional[str] = None):
+        print("initing")
         self.path = path
 
         if name is None:
@@ -27,7 +29,7 @@ class Router:
             self.name = name
 
         self.routes: typing.List[Route] = []
-        all_routes.append(self)
+        self.all_routes.append(self)
 
     def __call__(
         self,
@@ -36,6 +38,8 @@ class Router:
         *args,
         **kwargs
     ):
+        print("called")
+
         def decorator(_endpoint):
             @functools.wraps(_endpoint)
             def inner(*args, **kwargs):
@@ -57,3 +61,7 @@ class Router:
         frame = inspect.stack()[2]
         name = pathlib.Path(frame.filename).stem
         return name
+
+    @classmethod
+    def get_all_routes(cls):
+        return cls.all_routes

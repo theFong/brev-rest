@@ -26,7 +26,7 @@ def test_route_loader():
 
     route_loader.make_routes(app_path=test_app_path)
 
-    assert len(route.all_routes) == 2
+    assert len(route.Router.get_all_routes()) == 3
 
 
 @pytest.fixture()
@@ -67,5 +67,11 @@ def test_brev_change_default_status(brev_client: TestClient):
 
 def test_brev_other_endpoint(brev_client: TestClient):
     resp = brev_client.delete("/second_endpoint")
+
+    assert resp.status_code == 200
+
+
+def test_brev_sub_package(brev_client: TestClient):
+    resp = brev_client.get("/subpackage")
 
     assert resp.status_code == 200
