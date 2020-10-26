@@ -1,4 +1,3 @@
-print("second_endpoint loading")
 from brev_rest.route import Router
 
 

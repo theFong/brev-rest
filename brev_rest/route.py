@@ -19,7 +19,6 @@ class Route:
 
 class Router:
     def __init__(self, path: str, name: typing.Optional[str] = None):
-        print("new router made")
         self.path = path
 
         if name is None:

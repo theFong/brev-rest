@@ -17,7 +17,6 @@ def _run(rest_app: rest.App) -> None:
 
 def get_server(*, app_path: str):
     routes = route_loader.make_routes(app_path=app_path)
-    print(len(routes))
     app = asgi.BrevFastApi(routes)
 
     return _get_server(app)
