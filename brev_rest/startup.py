@@ -9,9 +9,7 @@ def nothing_app_handler(app):
 class Setup:
     is_setup = False
 
-    arguments: typing.Dict = {}
-    args: typing.Tuple = ()
-    kwargs: typing.Dict = {}
+    arguments: typing.Dict = {"args": (), "kwargs": {}}
 
     routers_to_add: typing.List[route.Router] = []
 

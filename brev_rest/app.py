@@ -10,12 +10,10 @@ def run(*, app_path: str) -> None:
     loader.init_setup(app_path=app_path)
     routes = loader.make_routers(app_path=app_path)
     title = get_default_title(app_path=app_path)
-    startup_args = (startup.Setup.args, startup.Setup.kwargs)
-    print("run", startup_args)
     app = asgi.BrevFastApiApp(
         title=title,
         routers=routes,
-        startup_args=startup_args,
+        startup_args=startup.Setup.arguments,
         before_app_setup_handler=startup.Setup.app_before_setup_handler,
         after_app_setup_handler=startup.Setup.app_after_setup_handler,
     )
