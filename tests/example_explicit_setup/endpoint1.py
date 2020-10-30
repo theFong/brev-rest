@@ -1,6 +1,6 @@
 from brev_rest import Router
 
-route = Router("/endpoint1")
+route = Router("/ex/endpoint1")
 
 
 @route

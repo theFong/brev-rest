@@ -4,6 +4,7 @@ from . import asgi
 from . import loader
 from . import route
 from . import startup
+from . import utils
 
 
 def run(*, app_path: str) -> None:
@@ -28,6 +29,8 @@ def _run(rest_app: rest.App) -> None:
 def get_server(*, app_path: str):
     loader.init_setup(app_path=app_path)
     routers = loader.make_routers(app_path=app_path)
+    print(routers)
+    print(len(routers))
     title = get_default_title(app_path=app_path)
     app = asgi.BrevFastApiApp(
         title=title,
@@ -49,5 +52,10 @@ def _get_server(rest_app: rest.App):
     return rest_app.get_server()
 
 
-def reset():
-    route.all_routes = []
+def reset(*, app_path):
+    route.Router.all_routers.clear()
+    startup.Setup.arguments["args"] = {}
+    startup.Setup.arguments["kwargs"] = {}
+    startup.Setup.is_setup = False
+    startup.Setup.routers_to_add.clear()
+    utils.clear_modules(app_path)

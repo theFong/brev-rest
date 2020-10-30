@@ -44,6 +44,7 @@ class BrevFastApiApp(AsgiApp):
     def add_router(self, router: route.Router):
         fastapi_api_router = fastapi.APIRouter()
         for r in router.routes:
+            print(router.name, "adding r", r)
             method = get_name(r.endpoint)
             operation_id = self.generate_operation_id_for_path(
                 name=router.path, path=r.path, method=method

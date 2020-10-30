@@ -37,7 +37,7 @@ def test_loader():
     assert len(route.Router.get_all_routers()) == 3
 
 
-@pytest.fixture()
+@pytest.fixture
 def brev_explicit_client():
     test_app_path = get_test_explicit_app_path()
 
@@ -45,10 +45,10 @@ def brev_explicit_client():
 
     tc = TestClient(server)
     yield tc
-    app.reset()
+    app.reset(app_path=test_app_path)
 
 
-@pytest.fixture()
+@pytest.fixture
 def brev_client():
     test_app_path = get_test_app_path()
 
@@ -56,7 +56,7 @@ def brev_client():
 
     tc = TestClient(server)
     yield tc
-    app.reset()
+    app.reset(app_path=test_app_path)
 
 
 def test_brev_endpoint(brev_client: TestClient):
@@ -110,10 +110,11 @@ def test_open_api_json(brev_client: TestClient):
 
 
 def test_explicit_endpoint(brev_explicit_client: TestClient):
-    resp = brev_explicit_client.get("/endpoint1")
+    resp = brev_explicit_client.get("/ex/endpoint1")
 
     assert resp.status_code == 200
     assert resp.json() == "get_endpoint1"
+    assert len(route.Router.get_all_routers()) == 2
 
 
 def test_explicit_open_api_json(brev_explicit_client: TestClient):
@@ -121,3 +122,13 @@ def test_explicit_open_api_json(brev_explicit_client: TestClient):
     openapi_json = resp.json()
 
     assert openapi_json["info"]["title"] == "Explicit Setup"
+
+
+def test_ordering_of_routes(brev_explicit_client: TestClient):
+    resp = brev_explicit_client.get("/openapi.json")
+    openapi_json = resp.json()
+
+    i = 2
+    for p in openapi_json["paths"].keys():
+        assert str(i) in p
+        i -= 1
