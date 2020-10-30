@@ -12,4 +12,4 @@ def get():
 
 @route
 def delete():
-    return
+    return "delete"

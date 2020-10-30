@@ -7,11 +7,11 @@ router = Router("/endpoint")
 
 @router
 def get():
-    return "original"
+    return shared1.share1
 
 
-@router(path="/{ep_id}")
-def get(ep_id: str):
+@router(path="/{ep_id}")  # type: ignore
+def get(ep_id: str):  # noqa: F811 | ignore redef
     return ep_id
 
 

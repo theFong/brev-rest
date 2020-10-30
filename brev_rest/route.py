@@ -17,7 +17,7 @@ class Route:
 
 
 class Router:
-    all_routes: typing.List["Router"] = []  # temp singleton
+    all_routers: typing.List["Router"] = []  # temp singleton
 
     def __init__(self, path: str, name: typing.Optional[str] = None):
         self.path = path
@@ -28,7 +28,7 @@ class Router:
             self.name = name
 
         self.routes: typing.List[Route] = []
-        self.all_routes.append(self)
+        self.all_routers.append(self)
 
     def __call__(
         self,
@@ -60,5 +60,5 @@ class Router:
         return name
 
     @classmethod
-    def get_all_routes(cls):
-        return cls.all_routes
+    def get_all_routers(cls):
+        return cls.all_routers

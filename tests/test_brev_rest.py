@@ -1,11 +1,10 @@
 import os
-import json
 import pathlib
-import pytest
+import pytest  # type: ignore
 from fastapi.testclient import TestClient
 
 from brev_rest import __version__
-from brev_rest import route_loader, route, app
+from brev_rest import loader, route, app
 
 test_app_name = "example_app"
 
@@ -21,12 +20,32 @@ def get_test_app_path():
     return path
 
 
-def test_route_loader():
+def get_test_explicit_app_path():
+    script_path = os.path.realpath(__file__)
+    path = pathlib.Path(script_path).parent
+    path = os.path.join(path, "example_explicit_setup")
+    return path
+
+
+def test_loader():
     test_app_path = get_test_app_path()
 
-    route_loader.make_routes(app_path=test_app_path)
+    loader.init_setup(app_path=test_app_path)
 
-    assert len(route.Router.get_all_routes()) == 3
+    loader.make_routers(app_path=test_app_path)
+
+    assert len(route.Router.get_all_routers()) == 3
+
+
+@pytest.fixture()
+def brev_explicit_client():
+    test_app_path = get_test_explicit_app_path()
+
+    server = app.get_server(app_path=test_app_path)
+
+    tc = TestClient(server)
+    yield tc
+    app.reset()
 
 
 @pytest.fixture()
@@ -44,7 +63,7 @@ def test_brev_endpoint(brev_client: TestClient):
     resp = brev_client.get("/endpoint")
 
     assert resp.status_code == 200
-    assert resp.json() == "original"
+    assert resp.json() == "shared1"
 
 
 def test_brev_sub_path(brev_client: TestClient):
@@ -60,7 +79,7 @@ def test_brev_overload_get(brev_client: TestClient):
 
 
 def test_brev_change_default_status(brev_client: TestClient):
-    resp = brev_client.post(f"/endpoint")
+    resp = brev_client.post("/endpoint")
 
     assert resp.status_code == 201
 
@@ -81,3 +100,24 @@ def test_brev_sub_package(brev_client: TestClient):
     resp = brev_client.get("/subpackage")
 
     assert resp.status_code == 200
+
+
+def test_open_api_json(brev_client: TestClient):
+    resp = brev_client.get("/openapi.json")
+    openapi_json = resp.json()
+
+    assert openapi_json["info"]["title"] == "Tests"
+
+
+def test_explicit_endpoint(brev_explicit_client: TestClient):
+    resp = brev_explicit_client.get("/endpoint1")
+
+    assert resp.status_code == 200
+    assert resp.json() == "get_endpoint1"
+
+
+def test_explicit_open_api_json(brev_explicit_client: TestClient):
+    resp = brev_explicit_client.get("/openapi.json")
+    openapi_json = resp.json()
+
+    assert openapi_json["info"]["title"] == "Explicit Setup"

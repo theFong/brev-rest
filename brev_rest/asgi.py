@@ -8,23 +8,40 @@ import uvicorn  # type: ignore
 from starlette.routing import get_name
 
 from . import rest
-from . import route as brev_route
+from . import route
+from . import startup
 
 
-class Asgi(rest.App):
+class AsgiApp(rest.App):
     @abc.abstractmethod
     def get_server(self) -> ASGIApp:
         raise NotImplementedError()
 
 
-class BrevFastApi(Asgi):
-    def __init__(self, title, routers: typing.List[brev_route.Router]):
-        self.app = fastapi.FastAPI(title=title)
+class BrevFastApiApp(AsgiApp):
+    def __init__(
+        self,
+        *,
+        title,
+        routers: typing.List[route.Router],
+        startup_args=None,
+        before_app_setup_handler=startup.nothing_app_handler,
+        after_app_setup_handler=startup.nothing_app_handler,
+    ):
+        if startup_args is None:
+            startup_args = {"args": (), "kwargs": {}}
+
+        kwargs = {"title": title, **startup_args["kwargs"]}
+
+        self.app = fastapi.FastAPI(*startup_args["args"], **kwargs)
+        before_app_setup_handler(self.app)
 
         for r in routers:
             self.add_router(r)
 
-    def add_router(self, router: brev_route.Router):
+        after_app_setup_handler(self.app)
+
+    def add_router(self, router: route.Router):
         fastapi_api_router = fastapi.APIRouter()
         for r in router.routes:
             method = get_name(r.endpoint)
@@ -36,7 +53,7 @@ class BrevFastApi(Asgi):
                 r.endpoint,
                 methods=[method],
                 operation_id=operation_id,
-                **r.kwargs
+                **r.kwargs,
             )
 
         self.app.include_router(
@@ -69,6 +86,6 @@ class BrevFastApi(Asgi):
         uvicorn.run(self.app)
 
 
-class FastApiRouter(brev_route.Router):
+class FastApiRouter(route.Router):
     def __call__(self, fn=None):
         return super().__call__(fn=fn)
