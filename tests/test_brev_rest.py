@@ -37,6 +37,18 @@ def test_loader():
     assert len(route.Router.get_all_routers()) == 3
 
 
+def test_get_meta():
+    test_app_path = get_test_app_path()
+
+    test_app_path = get_test_explicit_app_path()
+
+    meta = app.get_meta(app_path=test_app_path)
+
+    app.reset(app_path=test_app_path)
+
+    assert meta["openapi"] == "3.0.2"
+
+
 @pytest.fixture
 def brev_explicit_client():
     test_app_path = get_test_explicit_app_path()
@@ -51,6 +63,7 @@ def brev_explicit_client():
 @pytest.fixture
 def brev_client():
     test_app_path = get_test_app_path()
+    app.reset(app_path=test_app_path)
 
     server = app.get_server(app_path=test_app_path)
 

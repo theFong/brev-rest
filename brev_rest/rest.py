@@ -13,3 +13,7 @@ class App(abc.ABC):
     @abc.abstractmethod
     def get_server(self):
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_meta(self):
+        raise NotImplementedError()
