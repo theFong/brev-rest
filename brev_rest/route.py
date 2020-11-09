@@ -19,8 +19,10 @@ class Route:
 class Router:
     all_routers: typing.List["Router"] = []  # temp singleton
 
-    def __init__(self, path: str, name: typing.Optional[str] = None):
+    def __init__(self, path: str, name: typing.Optional[str] = None, **kwargs):
         self.path = path
+
+        self.kwargs = kwargs
 
         if name is None:
             self.name = self.get_name_from_file()
@@ -32,11 +34,15 @@ class Router:
 
     def __call__(
         self,
-        endpoint: typing.Callable = None,
+        endpoint: typing.Callable = None,  # must be first argument
         path: str = default_sub_path,
         *args,
         **kwargs
     ):
+        """
+        Decorator
+        """
+
         def decorator(_endpoint):
             @functools.wraps(_endpoint)
             def inner(*args, **kwargs):

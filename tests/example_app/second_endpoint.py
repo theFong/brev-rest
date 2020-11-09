@@ -1,4 +1,4 @@
-from brev_rest.route import Router
+from brev_rest import Router
 from . import shared2
 
 

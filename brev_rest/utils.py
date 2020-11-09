@@ -13,3 +13,23 @@ def clear_modules(path):
         sys.modules.pop(k)
 
     sys.path = [p for p in sys.path if path not in p]
+
+
+def merge_null_dict(d1, d2):
+    """
+    Merge to dicts and take non-None value
+     if either value does not exist add
+     if one or the other is not none take non none value
+     if both non none take d2
+    """
+
+    new = dict(d1)
+
+    for k, v in d2.items():
+        if v is not None:
+            new[k] = v
+        else:
+            if new.get(k) is None:
+                new[k] = v
+
+    return new

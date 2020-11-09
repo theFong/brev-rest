@@ -31,6 +31,9 @@ class BrevFastApiApp(AsgiApp):
         if startup_args is None:
             startup_args = {"args": (), "kwargs": {}}
 
+        if startup_args["kwargs"].get("title") is None:
+            startup_args["kwargs"].pop("title", None)
+
         kwargs = {"title": title, **startup_args["kwargs"]}
 
         self.app = fastapi.FastAPI(*startup_args["args"], **kwargs)
@@ -42,9 +45,20 @@ class BrevFastApiApp(AsgiApp):
         after_app_setup_handler(self.app)
 
     def add_router(self, router: route.Router):
-        fastapi_api_router = fastapi.APIRouter()
+        tags = router.kwargs.pop("tags")
+        explicit_tags = tags if tags is not None else []
+        include_router_kwargs = {
+            "dependencies": router.kwargs.pop("dependencies"),
+            "responses": router.kwargs.pop("responses"),
+            "default_response_class": router.kwargs.get("default_response_class"),
+        }
+
+        fastapi_api_router = fastapi.APIRouter(**router.kwargs)
         for r in router.routes:
             method = get_name(r.endpoint)
+            if r.kwargs["operation_id"] is None:
+                r.kwargs.pop("operation_id")
+
             operation_id = self.generate_operation_id_for_path(
                 name=router.path, path=r.path, method=method
             )
@@ -57,7 +71,10 @@ class BrevFastApiApp(AsgiApp):
             )
 
         self.app.include_router(
-            fastapi_api_router, prefix=router.path, tags=[router.name]
+            fastapi_api_router,
+            prefix=router.path,
+            tags=[router.name, *explicit_tags],
+            **include_router_kwargs,
         )
 
     def generate_operation_id_for_path(

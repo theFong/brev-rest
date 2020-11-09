@@ -1,4 +1,4 @@
-from brev_rest.startup import Setup
+from brev_rest import Setup
 from . import endpoint
 
 setup = Setup()
