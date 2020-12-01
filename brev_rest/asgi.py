@@ -4,7 +4,7 @@ from starlette.types import ASGIApp
 import fastapi
 import fastapi.utils
 import re
-import uvicorn  # type: ignore
+import uvicorn
 from starlette.routing import get_name
 
 from . import rest
@@ -22,21 +22,21 @@ class BrevFastApiApp(AsgiApp):
     def __init__(
         self,
         *,
-        title,
+        title: str,
         routers: typing.List[route.Router],
-        startup_args=None,
-        before_app_setup_handler=startup.nothing_app_handler,
-        after_app_setup_handler=startup.nothing_app_handler,
+        startup_args: rest.AppArgs = None,
+        before_app_setup_handler: startup.Handler = startup.nothing_app_handler,
+        after_app_setup_handler: startup.Handler = startup.nothing_app_handler,
     ):
         if startup_args is None:
-            startup_args = {"args": (), "kwargs": {}}
+            startup_args = rest.AppArgs(**{"args": (), "kwargs": {}})
 
         if startup_args["kwargs"].get("title") is None:
             startup_args["kwargs"].pop("title", None)
 
-        kwargs = {"title": title, **startup_args["kwargs"]}
+        fastapi_kwargs = {"title": title, **startup_args["kwargs"]}
 
-        self.app = fastapi.FastAPI(*startup_args["args"], **kwargs)
+        self.app = fastapi.FastAPI(*startup_args["args"], **fastapi_kwargs)
         before_app_setup_handler(self.app)
 
         for r in routers:
@@ -44,7 +44,7 @@ class BrevFastApiApp(AsgiApp):
 
         after_app_setup_handler(self.app)
 
-    def add_router(self, router: route.Router):
+    def add_router(self, router: route.Router) -> None:
         tags = router.kwargs.pop("tags")
         explicit_tags = tags if tags is not None else []
         include_router_kwargs = {
@@ -102,10 +102,5 @@ class BrevFastApiApp(AsgiApp):
     def run(self):
         uvicorn.run(self.app)
 
-    def get_meta(self):
+    def get_meta(self) -> typing.Dict[str, typing.Any]:
         return self.app.openapi()
-
-
-class FastApiRouter(route.Router):
-    def __call__(self, fn=None):
-        return super().__call__(fn=fn)

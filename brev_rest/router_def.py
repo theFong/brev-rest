@@ -1,29 +1,14 @@
-from typing import Optional, List, Union, Any, Type, Dict, Sequence, Callable, Set
+from typing import Optional, List, Union, Any, Type, Dict, Sequence
 from fastapi.applications import (
     Response,
     SetIntStr,
     DictIntStrAny,
     Depends,
-    JSONResponse,
 )
 import fastapi.routing
 import starlette.routing
 from . import route
-
-# prefix: str = "",
-# tags: Optional[List[str]] = None,
-# dependencies: Optional[Sequence[Depends]] = None,
-# responses: Optional[Dict[Union[int, str], Dict[str, Any]]] = None,
-# default_response_class: Optional[Type[Response]] = None,
-
-# routes: Optional[List[routing.BaseRoute]] = None,
-# redirect_slashes: bool = True,
-# default: Optional[ASGIApp] = None,
-# dependency_overrides_provider: Optional[Any] = None,
-# route_class: Type[APIRoute] = APIRoute,
-# default_response_class: Optional[Type[Response]] = None,
-# on_startup: Optional[Sequence[Callable]] = None,
-# on_shutdown: Optional[Sequence[Callable]] = None,
+from .types import GenericCallable, GenericKwargs
 
 
 class Router(route.Router):
@@ -37,17 +22,18 @@ class Router(route.Router):
         dependency_overrides_provider: Optional[Any] = None,
         route_class: Type[fastapi.routing.APIRoute] = fastapi.routing.APIRoute,
         default_response_class: Optional[Type[Response]] = None,
-        on_startup: Optional[Sequence[Callable]] = None,
-        on_shutdown: Optional[Sequence[Callable]] = None,
+        on_startup: Optional[Sequence[GenericCallable]] = None,
+        on_shutdown: Optional[Sequence[GenericCallable]] = None,
         tags: Optional[List[str]] = None,
         dependencies: Optional[Sequence[Depends]] = None,
         responses: Optional[Dict[Union[int, str], Dict[str, Any]]] = None,
-        **kwargs,
+        **kwargs: GenericKwargs,
     ):
 
         super().__init__(
             path,
             name=name,
+            routes=routes,
             redirect_slashes=redirect_slashes,
             default=default,
             dependency_overrides_provider=dependency_overrides_provider,
@@ -63,7 +49,7 @@ class Router(route.Router):
 
     def __call__(  # type: ignore
         self,
-        endpoint: Callable = None,
+        endpoint: GenericCallable = None,
         path: str = route.default_sub_path,
         *,
         response_model: Optional[Type[Any]] = None,
@@ -110,5 +96,6 @@ class Router(route.Router):
             include_in_schema=include_in_schema,
             name=name,
             callbacks=callbacks,
+            response_class=response_class,
             route_class_override=route_class_override,
         )

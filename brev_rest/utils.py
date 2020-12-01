@@ -1,7 +1,8 @@
 import sys
+import typing
 
 
-def clear_modules(path):
+def clear_modules(path: str):
     """
     Removing discoverability and reference to packages
     """
@@ -15,7 +16,9 @@ def clear_modules(path):
     sys.path = [p for p in sys.path if path not in p]
 
 
-def merge_null_dict(d1, d2):
+def merge_null_dict(
+    d1: typing.Dict[typing.Any, typing.Any], d2: typing.Dict[typing.Any, typing.Any]
+):
     """
     Merge to dicts and take non-None value
      if either value does not exist add

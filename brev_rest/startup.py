@@ -1,22 +1,30 @@
 import typing
+
 from . import route
+from . import rest
 
 
-def nothing_app_handler(app):
+def nothing_app_handler(app: typing.Any) -> None:
     ...
+
+
+Handler = typing.Callable[[typing.Any], None]
 
 
 class Setup:
     is_setup = False
 
-    arguments: typing.Dict = {"args": (), "kwargs": {}}
+    arguments: rest.AppArgs = {
+        "args": (),
+        "kwargs": {},
+    }
 
     routers_to_add: typing.List[route.Router] = []
 
     app_before_setup_handler = nothing_app_handler
     app_after_setup_handler = nothing_app_handler
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         self.arguments["args"] = args
         self.arguments["kwargs"] = kwargs
 
@@ -37,7 +45,7 @@ class Setup:
         cls.is_setup = True
 
     @classmethod
-    def app_before_setup(cls, handler):
+    def app_before_setup(cls, handler: Handler):
         """
         Decorator
         """
@@ -45,7 +53,7 @@ class Setup:
         return handler
 
     @classmethod
-    def app_after_setup(cls, handler):
+    def app_after_setup(cls, handler: Handler):
         """
         Decorator
         """

@@ -11,7 +11,9 @@ from . import route
 from . import startup
 
 
-def _get_endpoint_files(path=".") -> typing.Iterable[str]:
+def _get_endpoint_files(
+    path: typing.Union[str, pathlib.Path] = "."
+) -> typing.Iterable[str]:
     """
     Returns relative paths with use of Route object
     """
@@ -20,7 +22,7 @@ def _get_endpoint_files(path=".") -> typing.Iterable[str]:
     return set(s[0] for s in res)
 
 
-def _make_package_importable(*, app_path):
+def _make_package_importable(*, app_path: str):
     sys_path = pathlib.Path(app_path).parent
     sys_path_str = str(sys_path)
 
@@ -28,16 +30,16 @@ def _make_package_importable(*, app_path):
         sys.path.append(sys_path_str)
 
 
-def _load_module_from_file_path(*, app_path, file_path):
+def _load_module_from_file_path(*, app_path: str, file_path: str):
     _make_package_importable(app_path=app_path)
 
     _import_module_in_package(package_path=app_path, module_path=file_path)
 
 
-def _import_module_in_package(*, package_path, module_path):
+def _import_module_in_package(*, package_path: str, module_path: str):
     package_path_parent = pathlib.Path(package_path).parent
-    module_path = pathlib.Path(module_path).with_suffix("")
-    relative_path = os.path.relpath(module_path, package_path_parent)
+    module_path_ = pathlib.Path(module_path).with_suffix("")
+    relative_path = os.path.relpath(module_path_, package_path_parent)
 
     python_import_str = relative_path.replace("/", ".")
 
@@ -47,7 +49,7 @@ def _import_module_in_package(*, package_path, module_path):
     __import__(python_import_str)
 
 
-def _load_files_in_package(*, root_path, file_paths):
+def _load_files_in_package(*, root_path: str, file_paths: typing.Iterable[str]):
     for fp in file_paths:
         _load_module_from_file_path(app_path=root_path, file_path=fp)
 
@@ -62,7 +64,7 @@ def init_setup(*, app_path: str):
     startup.Setup.did_setup()
 
 
-def _get_setup_files(*, path):
+def _get_setup_files(*, path: typing.Union[str, pathlib.Path]):
     """
     Returns relative paths with use of Startup object
     """
