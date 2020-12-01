@@ -1,6 +1,6 @@
 import os
 import pathlib
-import pytest  # type: ignore
+import pytest
 from fastapi.testclient import TestClient
 
 from brev_rest import __version__

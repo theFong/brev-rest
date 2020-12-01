@@ -32,7 +32,7 @@ def _make_app(*, app_path: str) -> rest.App:
 
 
 def get_default_title(*, app_path: str):
-    raw_parent = pathlib.Path(app_path).parent.stem
+    raw_parent = pathlib.Path(app_path).resolve().parent.stem
     return raw_parent.replace("-", " ").replace("_", " ").capitalize()
 
 
