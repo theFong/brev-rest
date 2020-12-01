@@ -1,4 +1,5 @@
 import pathlib
+import logging
 from . import rest
 from . import asgi
 from . import loader
@@ -6,18 +7,23 @@ from . import route
 from . import startup
 from . import utils
 
+logger = logging.getLogger("brev-rest")
+
 
 def run(*, app_path: str) -> None:
+    logger.info("Running...")
     app = _make_app(app_path=app_path)
     app.run()
 
 
 def get_server(*, app_path: str):
+    logger.info("Getting server")
     app = _make_app(app_path=app_path)
     return app.get_server()
 
 
 def _make_app(*, app_path: str) -> rest.App:
+    logger.info(f"Loading src from {app_path}")
     loader.init_setup(app_path=app_path)
     routers = loader.make_routers(app_path=app_path)
     title = get_default_title(app_path=app_path)
