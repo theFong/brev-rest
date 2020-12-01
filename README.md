@@ -1,5 +1,17 @@
 # Brev Rest
 
+## Install
+
+```
+poetry add git+https://gitlab.com/tourmaline1/brev-rest.git
+```
+
+or
+
+```
+pip install git+https://gitlab.com/tourmaline1/brev-rest.git
+```
+
 ## Example
 
 See `tests/example_app`
