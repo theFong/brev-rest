@@ -1,5 +1,6 @@
 from typing import Optional, List, Union, Any, Type, Dict, Sequence
 from fastapi.applications import BaseRoute, Response, JSONResponse, Middleware
+
 from . import startup
 from .types import GenericCallable
 
