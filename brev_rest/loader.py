@@ -41,7 +41,7 @@ def _load_module_from_file_path(*, app_path: str, file_path: str):
 
 
 def _import_module_in_package(*, package_path: str, module_path: str):
-    logger.debug(f"importing moddule: {module_path} in package: {package_path}")
+    logger.debug(f"importing module: {module_path} in package: {package_path}")
     package_path_parent = pathlib.Path(package_path).parent
     module_path_ = pathlib.Path(module_path).with_suffix("")
     relative_path = os.path.relpath(module_path_, package_path_parent)
@@ -88,6 +88,7 @@ def make_routers(*, app_path: str) -> typing.List[route.Router]:
     resolved_path = pathlib.Path(app_path).resolve()
 
     endpoint_files = _get_endpoint_files(path=resolved_path)
+    logger.debug(f"endpoint files: {list(endpoint_files)}")
 
     _load_files_in_package(root_path=app_path, file_paths=endpoint_files)
 
