@@ -17,6 +17,7 @@ def run(*, app_path: str) -> None:
 
 
 def get_server(*, app_path: str):
+    print("we know")
     logger.info("Getting server")
     app = _make_app(app_path=app_path)
     return app.get_server()
