@@ -50,8 +50,8 @@ class Router(route.Router):
     def __call__(  # type: ignore
         self,
         endpoint: GenericCallable = None,
-        path: str = route.default_sub_path,
         *,
+        path: str = route.default_sub_path,
         response_model: Optional[Type[Any]] = None,
         status_code: int = 200,
         tags: Optional[List[str]] = None,
