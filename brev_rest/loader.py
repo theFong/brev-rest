@@ -19,7 +19,7 @@ def _get_endpoint_files(
     Returns relative paths with use of Route object
     """
     logger.debug("finding router files")
-    res = astpath.search(path, ".//Call/func/*[@id='Router' or @attr='Router']")
+    res = astpath.search(path, "//Call/func/*[@id='Router' or @attr='Router']")
 
     return set(s[0] for s in res)
 
@@ -78,7 +78,7 @@ def _get_setup_files(*, path: typing.Union[str, pathlib.Path]):
     Returns relative paths with use of Startup object
     """
     logger.info("finding setup files")
-    res = astpath.search(path, ".//Call/func/*[@id='Setup' or @attr='Setup']")
+    res = astpath.search(path, "//Call/func/*[@id='Setup' or @attr='Setup']")
 
     return set(s[0] for s in res)
 
