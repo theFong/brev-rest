@@ -30,8 +30,10 @@ class Router:
 
         if name is None:
             self.name = self.get_name_from_file()
+            print("name is none")
         else:
             self.name = name
+        print(self.name)
 
         self.routes: typing.List[Route] = []
         self.all_routers.append(self)
@@ -65,9 +67,9 @@ class Router:
 
     @classmethod
     def get_name_from_file(cls):
-        frame = inspect.stack()[2]
+        frame = inspect.stack()[3]
         name = pathlib.Path(frame.filename).stem
-        return name
+        return name.capitalize()
 
     @classmethod
     def get_all_routers(cls):

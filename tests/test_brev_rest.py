@@ -118,8 +118,10 @@ def test_brev_sub_package(brev_client: TestClient):
 def test_open_api_json(brev_client: TestClient):
     resp = brev_client.get("/openapi.json")
     openapi_json = resp.json()
+    print(openapi_json)
 
     assert openapi_json["info"]["title"] == "Tests"
+    assert openapi_json["paths"]["/endpoint"]["get"]["tags"][0] == "Endpoint"
 
 
 def test_explicit_endpoint(brev_explicit_client: TestClient):
