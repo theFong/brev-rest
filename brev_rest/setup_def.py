@@ -2,7 +2,7 @@ from typing import Optional, List, Union, Any, Type, Dict, Sequence
 from fastapi.applications import BaseRoute, Response, JSONResponse, Middleware
 
 from . import startup
-from .types import GenericCallable
+from .types import AnyCallable
 
 
 class Setup(startup.Setup):
@@ -23,10 +23,10 @@ class Setup(startup.Setup):
         swagger_ui_init_oauth: Optional[Dict[str, Any]] = None,
         middleware: Optional[Sequence[Middleware]] = None,
         exception_handlers: Optional[
-            Dict[Union[int, Type[Exception]], GenericCallable]
+            Dict[Union[int, Type[Exception]], AnyCallable]
         ] = None,
-        on_startup: Optional[Sequence[GenericCallable]] = None,
-        on_shutdown: Optional[Sequence[GenericCallable]] = None,
+        on_startup: Optional[Sequence[AnyCallable]] = None,
+        on_shutdown: Optional[Sequence[AnyCallable]] = None,
         openapi_prefix: str = "",
         root_path: str = "",
         root_path_in_servers: bool = True,

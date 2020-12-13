@@ -4,7 +4,7 @@ import inspect
 import pathlib
 from dataclasses import dataclass
 
-from .types import GenericKwargs
+from .types import AnyKwargs, AnyCallable
 
 
 default_sub_path = ""
@@ -14,8 +14,11 @@ default_sub_path = ""
 class Route:
     endpoint: typing.Callable[..., typing.Any]
     args: typing.Tuple
-    kwargs: GenericKwargs
+    kwargs: AnyKwargs
     path: str = default_sub_path
+
+
+T = typing.TypeVar("T", bound=AnyCallable)
 
 
 class Router:
@@ -26,30 +29,28 @@ class Router:
     ):
         self.path = path
 
-        self.kwargs: GenericKwargs = kwargs
+        self.kwargs: AnyKwargs = kwargs
 
         if name is None:
             self.name = self.get_name_from_file()
-            print("name is none")
         else:
             self.name = name
-        print(self.name)
 
         self.routes: typing.List[Route] = []
         self.all_routers.append(self)
 
     def __call__(
         self,
-        endpoint: typing.Callable[..., typing.Any] = None,  # must be first argument
+        endpoint: T = None,  # must be first argument
         path: str = default_sub_path,
         *args: typing.Any,
         **kwargs: typing.Any
-    ):
+    ) -> typing.Union[T, typing.Callable[[T], T]]:
         """
         Decorator
         """
 
-        def decorator(_endpoint: typing.Callable[..., typing.Any]):
+        def decorator(_endpoint: T):
             @functools.wraps(_endpoint)
             def inner(*args: typing.Any, **kwargs: typing.Any):
                 return endpoint(*args, **kwargs)

@@ -1,4 +1,4 @@
-from typing import Optional, List, Union, Any, Type, Dict, Sequence
+from typing import Callable, Optional, List, Union, Any, Type, Dict, Sequence, TypeVar
 from fastapi.applications import (
     Response,
     SetIntStr,
@@ -8,7 +8,9 @@ from fastapi.applications import (
 import fastapi.routing
 import starlette.routing
 from . import route
-from .types import GenericCallable, GenericKwargs
+from .types import AnyCallable
+
+T = TypeVar("T", bound=AnyCallable)
 
 
 class Router(route.Router):
@@ -22,12 +24,12 @@ class Router(route.Router):
         dependency_overrides_provider: Optional[Any] = None,
         route_class: Type[fastapi.routing.APIRoute] = fastapi.routing.APIRoute,
         default_response_class: Optional[Type[Response]] = None,
-        on_startup: Optional[Sequence[GenericCallable]] = None,
-        on_shutdown: Optional[Sequence[GenericCallable]] = None,
+        on_startup: Optional[Sequence[AnyCallable]] = None,
+        on_shutdown: Optional[Sequence[AnyCallable]] = None,
         tags: Optional[List[str]] = None,
         dependencies: Optional[Sequence[Depends]] = None,
         responses: Optional[Dict[Union[int, str], Dict[str, Any]]] = None,
-        **kwargs: GenericKwargs,
+        **kwargs: Any,
     ):
 
         super().__init__(
@@ -47,9 +49,9 @@ class Router(route.Router):
             **kwargs,
         )
 
-    def __call__(  # type: ignore
+    def __call__(
         self,
-        endpoint: GenericCallable = None,
+        endpoint: T = None,
         *,
         path: str = route.default_sub_path,
         response_model: Optional[Type[Any]] = None,
@@ -73,7 +75,7 @@ class Router(route.Router):
         name: Optional[str] = None,
         callbacks: Optional[List[fastapi.routing.APIRoute]] = None,
         route_class_override: Optional[Type[fastapi.routing.APIRoute]] = None,
-    ):
+    ) -> Union[T, Callable[[T], T]]:
         return super().__call__(
             endpoint=endpoint,
             path=path,

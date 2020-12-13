@@ -1,14 +1,14 @@
 import abc
 import typing
 
-from .types import GenericKwargs
+from .types import AnyKwargs
 
 # AppArgs = typing.Dict[str, typing.Union[GenericArgs, GenericKwargs]]
 AppArgs = typing.TypedDict(
     "AppArgs",
     {
         "args": typing.Tuple,
-        "kwargs": GenericKwargs,
+        "kwargs": AnyKwargs,
     },
 )
 

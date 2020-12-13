@@ -1,6 +1,6 @@
 import typing
 
 GenericArgs = typing.Tuple
-GenericKwargs = typing.Dict[str, typing.Any]
+AnyKwargs = typing.Dict[str, typing.Any]
 
-GenericCallable = typing.Callable[..., typing.Any]
+AnyCallable = typing.Callable[..., typing.Any]
