@@ -24,7 +24,11 @@ class Setup:
     app_before_setup_handler = nothing_app_handler
     app_after_setup_handler = nothing_app_handler
 
-    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+    def __init__(
+        self,
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> None:
         self.arguments["args"] = args
         self.arguments["kwargs"] = kwargs
 

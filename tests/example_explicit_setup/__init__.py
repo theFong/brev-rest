@@ -4,7 +4,7 @@ from brev_rest import Setup
 from . import endpoint1
 from . import endpoint2
 
-setup = Setup(title="Explicit Setup")
+setup = Setup(title="Explicit Setup", api_prefix="/api")
 
 setup.add_router(endpoint2.route)
 setup.add_router(endpoint1.route)

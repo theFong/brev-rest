@@ -1,5 +1,6 @@
 import os
 import pathlib
+from sys import flags
 import pytest
 from fastapi.testclient import TestClient
 
@@ -118,14 +119,13 @@ def test_brev_sub_package(brev_client: TestClient):
 def test_open_api_json(brev_client: TestClient):
     resp = brev_client.get("/openapi.json")
     openapi_json = resp.json()
-    print(openapi_json)
 
     assert openapi_json["info"]["title"] == "Tests"
     assert openapi_json["paths"]["/endpoint"]["get"]["tags"][0] == "Endpoint"
 
 
 def test_explicit_endpoint(brev_explicit_client: TestClient):
-    resp = brev_explicit_client.get("/ex/endpoint1")
+    resp = brev_explicit_client.get("/api/ex/endpoint1")
 
     assert resp.status_code == 200
     assert resp.json() == "get_endpoint1"

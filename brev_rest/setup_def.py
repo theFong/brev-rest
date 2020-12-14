@@ -30,6 +30,7 @@ class Setup(startup.Setup):
         openapi_prefix: str = "",
         root_path: str = "",
         root_path_in_servers: bool = True,
+        api_prefix: str = "",
         **extra: Any
     ):
         super().__init__(
@@ -53,5 +54,6 @@ class Setup(startup.Setup):
             openapi_prefix=openapi_prefix,
             root_path=root_path,
             root_path_in_servers=root_path_in_servers,
+            api_prefix=api_prefix,
             **extra
         )

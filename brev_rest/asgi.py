@@ -1,3 +1,4 @@
+import pathlib
 import typing
 import abc
 from starlette.types import ASGIApp
@@ -34,6 +35,8 @@ class BrevFastApiApp(AsgiApp):
         if startup_args["kwargs"].get("title") is None:
             startup_args["kwargs"].pop("title", None)
 
+        self.startup_args = startup_args
+
         fastapi_kwargs = {"title": title, **startup_args["kwargs"]}
 
         self.app = fastapi.FastAPI(*startup_args["args"], **fastapi_kwargs)
@@ -45,23 +48,24 @@ class BrevFastApiApp(AsgiApp):
         after_app_setup_handler(self.app)
 
     def add_router(self, router: route.Router) -> None:
-        tags = router.kwargs.pop("tags")
+        tags = router.kwargs.pop("tags", None)
         explicit_tags = tags if tags is not None else []
         include_router_kwargs = {
-            "dependencies": router.kwargs.pop("dependencies"),
-            "responses": router.kwargs.pop("responses"),
-            "default_response_class": router.kwargs.get("default_response_class"),
+            "dependencies": router.kwargs.pop("dependencies", None),
+            "responses": router.kwargs.pop("responses", None),
+            "default_response_class": router.kwargs.get("default_response_class", None),
         }
 
         fastapi_api_router = fastapi.APIRouter(**router.kwargs)
         for r in router.routes:
             method = get_name(r.endpoint)
-            if r.kwargs["operation_id"] is None:
-                r.kwargs.pop("operation_id")
 
-            operation_id = self.generate_operation_id_for_path(
-                name=router.path, path=r.path, method=method
-            )
+            operation_id = r.kwargs.pop("operation_id", None)
+            if operation_id is None:
+                operation_id = self.generate_operation_id_for_path(
+                    name=router.path, path=r.path, method=method
+                )
+
             fastapi_api_router.add_api_route(
                 r.path,
                 r.endpoint,
@@ -70,12 +74,20 @@ class BrevFastApiApp(AsgiApp):
                 **r.kwargs,
             )
 
+        path = self.make_path(
+            suffix=router.path, base=self.startup_args["kwargs"]["api_prefix"]
+        )
         self.app.include_router(
             fastapi_api_router,
-            prefix=router.path,
+            prefix=path,
             tags=[router.name, *explicit_tags],
             **include_router_kwargs,
         )
+
+    def make_path(self, *, suffix: str, base: str = ""):
+        if base is None or len(base) == 0:
+            return suffix
+        return f"/{base.strip('/')}/{suffix.lstrip('/')}"
 
     def generate_operation_id_for_path(
         self, *, name: str, path: str, method: str
