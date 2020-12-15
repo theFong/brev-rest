@@ -53,7 +53,7 @@ class Router:
         def decorator(_endpoint: T):
             @functools.wraps(_endpoint)
             def inner(*args: typing.Any, **kwargs: typing.Any):
-                return endpoint(*args, **kwargs)
+                return _endpoint(*args, **kwargs)
 
             route = Route(path=path, endpoint=_endpoint, args=args, kwargs=kwargs)
             self.routes.append(route)
